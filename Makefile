@@ -1,28 +1,18 @@
-Sources=main.cpp mathBasic.cpp
-Executable=Lab6
+all: myProgram
 
-CFlags=-c -Wall -g -Iinc
-LDFlags=
-ObjectDir=obj/
-SourceDir=src/
-BinDir=bin/
+myProgram: main.o libmylib.a #libmylib.a is the dependency for the executable
+		gcc -lm -o myProgram main.o -L. -lmylib
 
-CC=g++
-RM=rm
+main.o: src/main.cpp
+		gcc -O -c src/main.cpp -I.
 
-#!!!!!DO NOT EDIT ANYTHING UNDER THIS LINE!!!!!
-Objects=$(Sources:.cpp=.o)
-CSources=$(addprefix $(SourceDir),$(Sources))
-CObjects=$(addprefix $(ObjectDir),$(Objects))
-CExecutable=$(addprefix $(BinDir),$(Executable))
+mathBasic.o: src/mathBasic.cpp include/mathBasic.h
+		gcc -O -c src/mathBasic.cpp -I.
 
-all: $(CSources) $(CExecutable)
+libmylib.a: mathBasic.o
+		ar rcs libmylib.a mathBasic.o
 
-$(CExecutable): $(CObjects)
-	$(CC) $(LDFlags) $(CObjects) -o $@
-
-$(ObjectDir)%.o: $(SourceDir)%.cpp
-	$(CC) $(CFlags) $< -o $@
+libs: libmylib.a
 
 clean:
-	$(RM) $(CObjects)
+		rm -f myProgram *.o *.a *.gch #This way is cleaner than your clean
